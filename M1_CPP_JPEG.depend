@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1668076228 source:c:\users\bmermod\downloads\git proj\m1_cpp_jpeg\main.cpp
+	<iostream>
+	"include/cCompression.h"
+	<math.h>
+
+1668078502 c:\users\bmermod\downloads\git proj\m1_cpp_jpeg\include\ccompression.h
+	<cmath>
+	<iostream>
+
+1667470527 source:c:\users\bmermod\downloads\git proj\m1_cpp_jpeg\src\ccompression.cpp
+	"cCompression.h"
+
