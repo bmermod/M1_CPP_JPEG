@@ -4,6 +4,30 @@
 #include <math.h>
 using namespace std;
 
+void printList(unsigned char **liste, int offset=0){
+    for(int8_t i = 0; i<8; i++){
+        for(int8_t j = 0; j<8; j++){
+            cout << (int) liste[i][j] + offset << " , ";
+        }
+        cout << endl;
+    }
+}
+void printList(double **liste, int offset=0){
+    for(int8_t i = 0; i<8; i++){
+        for(int8_t j = 0; j<8; j++){
+            cout << liste[i][j] + offset << " , ";
+        }
+        cout << endl;
+    }
+}
+void printList(int **liste, int offset=0){
+    for(int8_t i = 0; i<8; i++){
+        for(int8_t j = 0; j<8; j++){
+            cout << liste[i][j] + offset << " , ";
+        }
+        cout << endl;
+    }
+}
 int main(){
     unsigned int tailleBloc = 8;
     unsigned char** Image = new unsigned char*[tailleBloc];
@@ -26,33 +50,55 @@ int main(){
         }
     }
 
-    for(int8_t i = 0; i<tailleBloc; i++){
-        for(int8_t j = 0; j<tailleBloc; j++){
-            cout << (int) Image[i][j] << " , ";
-        }
-        cout << endl;
-    }
-
-    //Tests
-    cCompression a(16,16,Image);
+    //Création des listes nécessaires
     double** ImageDCT = new double*[tailleBloc];
     for(unsigned i=0;i<tailleBloc;i++){
         ImageDCT[i]=new double[tailleBloc];
     }
+    int** ImageQUANT = new int*[tailleBloc];
+    for(unsigned i=0;i<tailleBloc;i++){
+        ImageQUANT[i]=new int[tailleBloc];
+    }
+    double** ImageDEQUANT = new double*[tailleBloc];
+    for(unsigned i=0;i<tailleBloc;i++){
+        ImageDEQUANT[i]=new double[tailleBloc];
+    }
+    unsigned char** ImageDCTi = new unsigned char*[tailleBloc];
+    for(unsigned i=0;i<tailleBloc;i++){
+        ImageDCTi[i] = new unsigned char[tailleBloc];
+    }
+
+    //Tests
+    cout << "Création compression" << endl;
+    cCompression a(16,16,Image);
+
+    cout << "Bloc original:" << endl;
+    printList(Image);
+
+
+
+    cout << "Bloc DCT:" << endl;
     a.Calcul_DCT_Block(Image, ImageDCT);
-    for(int8_t i = 0; i<tailleBloc; i++){
-        for(int8_t j = 0; j<tailleBloc; j++){
-            cout << ImageDCT[i][j] << " , ";
-        }
-        cout << endl;
-    }
-    a.Calcul_iDCT(ImageDCT, Image);
-    for(int8_t i = 0; i<tailleBloc; i++){
-        for(int8_t j = 0; j<tailleBloc; j++){
-            cout << (int) Image[i][j] << " , ";
-        }
-        cout << endl;
-    }
+    printList(ImageDCT);
+    /*
+    cout << "Bloc iDCT:" << endl;
+    a.Calcul_iDCT(ImageDCT, ImageDCTi);
+    printList(ImageDCTi);
+    */
+    cout << "Bloc QUANT:" << endl;
+    a.quant_JPEG(ImageDCT,ImageQUANT);
+    printList(ImageQUANT);
+
+    cout << "Bloc DEQUANT:" << endl;
+    a.dequant_JPEG(ImageQUANT,ImageDEQUANT);
+    printList(ImageDEQUANT);
+
+    cout << "Bloc iDCT:" << endl;
+    a.Calcul_iDCT(ImageDEQUANT, ImageDCTi);
+    printList(ImageDCTi);
+
+    cout << "Block iDCT+128:" << endl;
+    printList(ImageDCTi, 128);
 
     return 0;
 }

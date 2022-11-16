@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <iostream>
 using namespace std;
+const unsigned int tailleBloc = 8;
 class cCompression
 {
     private:
@@ -11,8 +12,7 @@ class cCompression
         unsigned int mHauteur;
         unsigned char **mBuffer;
         unsigned int mQualite;
-        const unsigned int tailleBloc = 8;
-        int Quant[tailleBloc][tailleBloc] = {
+        const int Quant[tailleBloc][tailleBloc] = {
             {16,11,10,16,24,40,51,61},
             {12,12,14,19,26,58,60,55},
             {14,13,16,24,40,57,69,56},
@@ -21,7 +21,7 @@ class cCompression
             {24,35,55,64,81,104,113,92},
             {49,64,78,87,103,121,120,101},
             {72,92,955,98,112,100,103,99}
-        }
+        };
 
     public:
         //Constructeurs & Destructeurs
@@ -47,9 +47,9 @@ class cCompression
         void Calcul_DCT_Block(unsigned char **Bloc, double **DCT_Img){
             double Cu,Cv,sommexy = 0;
             for(unsigned int u=0; u<tailleBloc; u++){
-                u==0 ? Cu=1/sqrt(2) : Cu=1.0;
+                u==0 ? Cu=1./sqrt(2) : Cu=1.0;
                 for(unsigned int v=0; v<tailleBloc; v++){
-                    v==0 ? Cv=1/sqrt(2) : Cv=1.0;
+                    v==0 ? Cv=1./sqrt(2) : Cv=1.0;
                     sommexy = 0;
                     //Calcul de la somme
                     for(unsigned int x=0; x<tailleBloc; x++){
@@ -65,7 +65,7 @@ class cCompression
 
                 }
             }
-            cout << "DCT done" << endl;
+            //cout << "DCT done" << endl;
         };
         void Calcul_iDCT(double **DCT_Img, unsigned char **Bloc){
             double Cu,Cv,sommexy = 0;
@@ -83,41 +83,61 @@ class cCompression
                     Bloc[x][y] = (1./4)*sommexy;
                 }
             }
-            cout << "iDCT done" << endl;
+            //cout << "iDCT done" << endl;
         };
 
         //Fct Quantification
 
-        void quant_JPEG(double **img_DCT, int** Img_Quant){
+        void quant_JPEG(double **img_DCT, int **Img_Quant){
             /*
             Calcul de Qtab, matrice contenant soit des 1 soit des 255
             ou autre val
             λ def selon val this->mQualite
             Puis round(P/Qtab)
             */
-            double lamba = 0;
-            this->mQualite < 50 ? lamba = 5000./this->mQualite : lamba = 200-2.*this->mQualite;
-            int Qtab[tailleBloc][tailleBloc];
+            double lambda = 0;
+            this->mQualite < 50 ? lambda = 5000./this->mQualite : lambda = 200-2.*this->mQualite;
             for(int i=0; i<tailleBloc;i++){
                 for(int j=0; j<tailleBloc;j++){
-                    double comparer = abs((Quant[i][j]*lambda+50)/100) > 255);
+                    double comparer = floor((Quant[i][j]*lambda+50)/100);
                     if(comparer < 1){
-                        Img_Quant[i][j]=1;
+                        Img_Quant[i][j]=round(img_DCT[i][j]);
                     }else if(comparer > 255){
-                        Img_Quant[i][j]=255;
+                        Img_Quant[i][j]=round(img_DCT[i][j]/255);
                     }else{
-                        Img_Quant[i][j]=comparer;
+                        Img_Quant[i][j]=round(img_DCT[i][j]/comparer);
                     }
                 }
             }
         }
 
         unsigned char** dequant_JPEG(int** Img_Quant, double **img_DCT){
+            double lambda = 0;
+            this->mQualite < 50 ? lambda = 5000./this->mQualite : lambda = 200-2.*this->mQualite;
+            for(int i=0; i<tailleBloc;i++){
+                for(int j=0; j<tailleBloc;j++){
+                    double comparer = floor((Quant[i][j]*lambda+50)/100);
+                    if(comparer < 1){
+                        img_DCT[i][j]=round(Img_Quant[i][j]);
+                    }else if(comparer > 255){
+                        img_DCT[i][j]=round(Img_Quant[i][j] * 255);
+                    }else{
+                        img_DCT[i][j]=round(Img_Quant[i][j] * comparer);
+                    }
+                }
+            }
 
         }
 
         double EQM(int **Bloc8x8){
+            double val = 0.;
+            for(int i=0; i<tailleBloc;i++){
+                for(int j=0; j<tailleBloc;j++){
 
+                }
+            }
+
+            return val;
         }
 
         double Taux_Compression(int **Bloc8x8){

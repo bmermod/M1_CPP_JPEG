@@ -1,4 +1,4 @@
 cd dans ce dossier
 git add .
-git commit -m "First commit (2nd seance de TP)"
+git commit -m "MSG"
 git push -u origin main
