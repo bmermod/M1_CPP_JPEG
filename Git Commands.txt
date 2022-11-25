@@ -2,3 +2,25 @@ cd dans ce dossier
 git add .
 git commit -m "MSG"
 git push -u origin main
+
+10
+01
+(10 & 01)
+02
+11
+20
+(012 & 210)
+30
+21
+12
+03
+(3210 & 0123)
+etc.
+DC_Precedent = 0;
+for(int x=0;x<finx;x+=8){
+	for(int y=0;y<finy;y+=8){
+		c = Bloc[i][j] - DC_Precedent;
+		//ZIG ZAG
+		DC_Precedent = Bloc[i][j];
+	}
+}

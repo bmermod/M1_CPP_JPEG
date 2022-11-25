@@ -29,21 +29,13 @@ class cCompression
             this->mLargeur = mLargeur;
             this->mHauteur = mHauteur;
             this->mBuffer = mBuffer;
-            //BOUCLES FOR ?
-            /*
-            for(int8_t i = 0; i<tailleBloc; i++){
-                for(int8_t j = 0; j<tailleBloc; j++){
-                    this->mBuffer[i][j] = mBuffer[i][j];
-                }
-            }
-            */
             this->mQualite = mQualite;
 
 
         };
+
         ~cCompression(){};
 
-        //Fct DCT
         void Calcul_DCT_Block(unsigned char **Bloc, double **DCT_Img){
             double Cu,Cv,sommexy = 0;
             for(unsigned int u=0; u<tailleBloc; u++){
@@ -67,6 +59,7 @@ class cCompression
             }
             //cout << "DCT done" << endl;
         };
+
         void Calcul_iDCT(double **DCT_Img, unsigned char **Bloc){
             double Cu,Cv,sommexy = 0;
             for(unsigned int x=0; x<tailleBloc; x++){
@@ -85,8 +78,6 @@ class cCompression
             }
             //cout << "iDCT done" << endl;
         };
-
-        //Fct Quantification
 
         void quant_JPEG(double **img_DCT, int **Img_Quant){
             /*
@@ -129,19 +120,28 @@ class cCompression
 
         }
 
-        double EQM(int **Bloc8x8){
+        double EQM(unsigned char **Bloc8x8, unsigned char **Bloc){
+
             double val = 0.;
             for(int i=0; i<tailleBloc;i++){
                 for(int j=0; j<tailleBloc;j++){
-
+                    val+=pow((Bloc8x8[i][j] - Bloc[i][j]),2);
                 }
             }
-
-            return val;
+            return sqrt(val/pow(tailleBloc,2));
         }
 
         double Taux_Compression(int **Bloc8x8){
-
+            //Retourner l'inverse du (nb de 0 dans la sortie de QUANT/64)
+            int8_t zeroCompteur = 0;
+            for(int i=0; i<tailleBloc;i++){
+                for(int j=0; j<tailleBloc;j++){
+                    if(Bloc8x8[i][j] != 0){
+                        zeroCompteur++;
+                    }
+                }
+            }
+            return 1-(zeroCompteur/pow(tailleBloc,2));
         }
         //Getters & Setters
         unsigned int getLargeur() { return mLargeur; }
